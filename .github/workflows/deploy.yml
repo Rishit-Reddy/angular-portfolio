@@ -48,9 +48,6 @@ jobs:
         ssh -o StrictHostKeyChecking=no rishitpalle@35.228.195.201 "
           cd ~/angular-deploy;
 
-          # Install serve if not already installed
-          npm install -g serve || true;
-
           # Start the static server
           nohup serve -s . -l 80 > ~/angular-server.log 2>&1 &
         "

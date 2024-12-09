@@ -29,27 +29,27 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh -o StrictHostKeyChecking=no rishitpalle@35.228.195.201 "
-          # Stop any running instance of the Angular server
-          pkill node || true;
-          
-          # Clear the deployment folder
-          rm -rf ~/angular-deploy || true;
 
-          # Create a new deployment folder
-          mkdir -p ~/angular-deploy;
+        ssh -o StrictHostKeyChecking=no rishitpalle@35.228.195.201 "
+          # Clean the Apache HTML folder
+          sudo rm -rf /var/www/html/* || true;
+
+          # Create the HTML directory if it doesn't exist
+          sudo mkdir -p /var/www/html;
         "
 
         # Copy the built project to the server
         scp -r dist/portfolio/* rishitpalle@35.228.195.201:~/angular-deploy/
 
-
-        # Start the Angular server
         ssh -o StrictHostKeyChecking=no rishitpalle@35.228.195.201 "
-          cd ~/angular-deploy;
+          # Copy the files from the Angular build to Apache HTML folder
+          sudo cp ~/angular-deploy/browser/* /var/www/html/;
 
-          # Start the static server
-          nohup serve -s . -l 80 > ~/angular-server.log 2>&1 &
+          # Ensure correct permissions for Apache
+          sudo chmod -R 755 /var/www/html;
+
+          # Restart Apache to serve the updated app
+          sudo systemctl restart apache2;
         "
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}

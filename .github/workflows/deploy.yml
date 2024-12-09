@@ -39,7 +39,7 @@ jobs:
         scp -r dist/portfolio/* rishitpalle@35.228.195.201:~/angular-deploy/
 
         ssh -o StrictHostKeyChecking=no rishitpalle@35.228.195.201 "
-          sudo cp ~/angular-deploy/browser/* /var/www/html/;
+          sudo cp -r ~/angular-deploy/browser/* /var/www/html/;
           sudo chmod -R 755 /var/www/html;
           sudo systemctl restart apache2;
         "

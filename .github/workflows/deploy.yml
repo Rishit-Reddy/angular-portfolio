@@ -41,7 +41,7 @@ jobs:
         "
 
         # Copy the built project to the server
-        scp -r dist/angular-portfolio/* rishitpalle@35.228.195.201:~/angular-deploy/
+        scp -r dist/portfolio/* rishitpalle@35.228.195.201:~/angular-deploy/
 
 
         # Start the Angular server

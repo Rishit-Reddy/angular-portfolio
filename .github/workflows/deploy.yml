@@ -1,0 +1,58 @@
+name: Deploy Angular App to Google Cloud VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Angular project
+      run: npm run build --prod
+
+    - name: Deploy to Google Cloud VM
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh -o StrictHostKeyChecking=no USER@SERVER_IP "
+          # Stop any running instance of the Angular server
+          pkill node || true;
+          
+          # Clear the deployment folder
+          rm -rf ~/angular-deploy || true;
+
+          # Create a new deployment folder
+          mkdir -p ~/angular-deploy;
+        "
+
+        # Copy the built project to the server
+        scp -r dist/angular-portfolio/* rishitpalle@35.228.195.201:~/angular-deploy/
+
+
+        # Start the Angular server
+        ssh -o StrictHostKeyChecking=no rishitpalle@35.228.195.201 "
+          cd ~/angular-deploy;
+
+          # Install serve if not already installed
+          npm install -g serve || true;
+
+          # Start the static server
+          nohup serve -s . -l 80 > ~/angular-server.log 2>&1 &
+        "
+      env:
+        SSH_KEY: ${{ secrets.SSH_KEY }}

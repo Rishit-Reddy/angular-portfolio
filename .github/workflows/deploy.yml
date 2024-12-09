@@ -29,7 +29,7 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh -o StrictHostKeyChecking=no USER@SERVER_IP "
+        ssh -o StrictHostKeyChecking=no rishitpalle@35.228.195.201 "
           # Stop any running instance of the Angular server
           pkill node || true;
           
